@@ -1,0 +1,20 @@
+{
+  "manifest_version": 2,
+  "name": "Scratch Ads Counter",
+  "version": "1.0",
+  "description": "An extension that counts links to Scratch projects on the web page.",
+  "permissions": [
+    "activeTab"
+  ],
+  "browser_action": {
+    "default_title": "Scratch Ads Counter",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://scratch.mit.edu/*"],
+      "js": ["content-script.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
