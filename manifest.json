@@ -1,20 +1,24 @@
 {
   "manifest_version": 2,
   "name": "Scratch Ads Counter",
-  "version": "1.1",
-  "description": "An extension that counts ads on Scratch.",
+  "version": "1.2",
+  "description": "Counts Scratch ads",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "https://scratch.mit.edu/*"
   ],
   "browser_action": {
-    "default_title": "Scratch Ads Counter",
+    "default_icon": "icon.png",
     "default_popup": "popup.html"
+  },
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "content_scripts": [
     {
       "matches": ["https://scratch.mit.edu/*"],
-      "js": ["content-script.js"],
-      "run_at": "document_idle"
+      "js": ["content-script.js"]
     }
   ]
 }
