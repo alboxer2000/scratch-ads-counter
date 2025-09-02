@@ -1,5 +1,15 @@
 // Function to check the page content for links
 function checkPageContent() {
+  // Check if the current URL is a Scratch website
+  if (!window.location.href.startsWith("https://scratch.mit.edu/")) {
+    // Send a message to the popup to display "This is not Scratch!"
+    browser.runtime.sendMessage({
+      action: "showError",
+      message: "This is not Scratch!"
+    });
+    return; // Stop the script execution
+  }
+
   const textToFindProjects = "https://scratch.mit.edu/projects/";
   const textToFindStudios = "https://scratch.mit.edu/studios/";
   const excludedText = "https://scratch.mit.edu/projects/editor/";
