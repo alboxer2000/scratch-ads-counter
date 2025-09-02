@@ -1,8 +1,10 @@
 // Function to check the page content for links
 function checkPageContent() {
-  const textToFind = "https://scratch.mit.edu/projects";
+  const textToFindProjects = "https://scratch.mit.edu/projects/";
+  const textToFindStudios = "https://scratch.mit.edu/studios/";
   const excludedText = "https://scratch.mit.edu/projects/editor/";
   const excludedRemix = "/remixes";
+  const excludedCharacter = "#";
   let count = 0;
 
   // Find all <a> tags (links) on the page
@@ -10,16 +12,28 @@ function checkPageContent() {
 
   // Loop through all links to check their href attribute and text content
   links.forEach(link => {
+    // Check if the link is inside a div with the class "project-description"
+    const isInsideProjectDescription = link.closest('.project-description');
+    if (isInsideProjectDescription) {
+      return; // Skip this link
+    }
+    
     // First, check if the link has an href property before trying to read it
     const href = link.href || '';
     const textContent = link.textContent || '';
     
-    // Check if the href contains the text to find, and if it does not contain the texts to exclude.
-    if (href.includes(textToFind) &&
-        !href.includes(excludedText) &&
-        !href.endsWith('#') &&
-        !href.endsWith(excludedRemix) &&
-        textContent.includes(textToFind)) { // Check if the visible text includes the URL
+    // Check if the link is a project link
+    const isProjectLink = href.includes(textToFindProjects) &&
+                         !href.includes(excludedText) &&
+                         !href.endsWith(excludedRemix) &&
+                         !href.endsWith(excludedCharacter) &&
+                         textContent.includes(textToFindProjects);
+    
+    // Check if the link is a studio link
+    const isStudioLink = href.includes(textToFindStudios) &&
+                         textContent.includes(textToFindStudios);
+
+    if (isProjectLink || isStudioLink) {
       count++;
       // Highlight the link
       link.style.border = "2px solid red";
