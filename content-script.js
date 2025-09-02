@@ -1,49 +1,52 @@
-// Funzione per controllare il contenuto della pagina per i link
+// Function to check the page content for links
 function checkPageContent() {
   const textToFind = "https://scratch.mit.edu/projects";
   const excludedText = "https://scratch.mit.edu/projects/editor/";
   const excludedRemix = "/remixes";
   let count = 0;
 
-  // Trova tutti i tag <a> (link) nella pagina
+  // Find all <a> tags (links) on the page
   const links = document.querySelectorAll('a');
 
-  // Loop attraverso tutti i link per controllare il loro attributo href e il loro testo
+  // Loop through all links to check their href attribute and text content
   links.forEach(link => {
-    // Prima, controlla se il link ha una proprietà href prima di provare a leggerla
+    // First, check if the link has an href property before trying to read it
     const href = link.href || '';
-    const text = link.textContent || '';
+    const textContent = link.textContent || '';
     
-    // Controlla se l'href o il testo contengono il testo da trovare, e se non contengono i testi da escludere.
-    if ((href.includes(textToFind) || text.includes(textToFind)) &&
+    // Check if the href contains the text to find, and if it does not contain the texts to exclude.
+    if (href.includes(textToFind) &&
         !href.includes(excludedText) &&
         !href.endsWith('#') &&
-        !href.endsWith(excludedRemix)) {
+        !href.endsWith(excludedRemix) &&
+        textContent.includes(textToFind)) { // Check if the visible text includes the URL
       count++;
-      // Evidenzia il link
+      // Highlight the link
       link.style.border = "2px solid red";
       link.style.backgroundColor = "yellow";
     }
   });
 
-  // Invia un messaggio all'estensione con il risultato
+  // Send a message to the extension with the result
   browser.runtime.sendMessage({
     action: "updateCount",
     count: count
   });
 
-  // Aggiorna il badge dell'azione del browser con il conteggio
-  browser.browserAction.setBadgeText({ text: count.toString() });
-  browser.browserAction.setBadgeBackgroundColor({ color: "blue" });
+  // Update the browser action badge with the count
+  browser.runtime.sendMessage({
+    action: "updateBadge",
+    count: count
+  });
 }
 
-// Ascolta i messaggi dal popup
+// Listen for messages from the popup
 browser.runtime.onMessage.addListener((message) => {
   if (message.action === "startCounting") {
-    // Esegue la funzione per la prima volta
+    // Execute the function for the first time
     checkPageContent();
 
-    // Esegue la funzione ogni 5 secondi
+    // Execute the function every 5 seconds
     setInterval(checkPageContent, 5000);
   }
 });
