@@ -1,15 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const linkCountElement = document.getElementById('linkCount');
+  const countElement = document.getElementById('count');
+  const errorElement = document.getElementById('error');
 
-  // Invia un messaggio allo script di contenuto per avviare il conteggio
-  browser.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
+  // Request the content script to start counting when the popup is opened
+  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     browser.tabs.sendMessage(tabs[0].id, { action: "startCounting" });
   });
 
-  // Riceve il messaggio dallo script di contenuto
+  // Listen for messages from the content script
   browser.runtime.onMessage.addListener((message) => {
     if (message.action === "updateCount") {
-      linkCountElement.textContent = message.count;
+      // Update the count displayed in the popup
+      countElement.textContent = message.count;
+      errorElement.style.display = 'none';
+      countElement.style.display = 'block';
+    } else if (message.action === "updateBadge") {
+      // Update the badge on the extension icon
+      browser.browserAction.setBadgeText({ text: message.count.toString() });
+      browser.browserAction.setBadgeBackgroundColor({ color: "#4688F1" });
+    } else if (message.action === "showError") {
+      // Show an error message in the popup
+      errorElement.textContent = message.message;
+      errorElement.style.display = 'block';
+      countElement.style.display = 'none';
+      browser.browserAction.setBadgeText({ text: "" });
     }
   });
 });
